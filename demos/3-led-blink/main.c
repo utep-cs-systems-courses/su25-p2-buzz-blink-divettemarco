@@ -5,7 +5,7 @@
 
 int main(void) {
   P1DIR |= LEDS;
-  P1OUT &= ~LED_GREEN;
+  P1OUT |= LED_GREEN;
   P1OUT |= LED_RED;
 
   configureClocks();		/* setup master oscillator, CPU & peripheral clocks */
@@ -15,15 +15,21 @@ int main(void) {
 }
 
 // global state var to count time
-int secondCount = 0;
+int secCount = 0;
+int twoSecCount = 0;
 
 void
 __interrupt_vec(WDT_VECTOR) WDT()	/* 250 interrupts/sec */
 {
-  secondCount ++;
-  if (secondCount >= 250) { 	/* once each sec... */
-    secondCount = 0;		/* reset count */
-    P1OUT ^= LED_GREEN;		/* toggle green LED */
+  secCount++;
+  twoSecCount++;
+  if (secCount >= 250) {        	/* once each sec... */
+    secCount = 0;	     	/* reset count */
+    P1OUT ^= LED_GREEN;          /* toggle green */
+  }
+  if (twoSecCount >= 500) {                /* once each sec... */
+    twoSecCount = 0;
+    P1OUT ^= LED_RED;
   }
 } 
 

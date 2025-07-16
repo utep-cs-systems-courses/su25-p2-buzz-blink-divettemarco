@@ -37,7 +37,6 @@ __interrupt_vec(WDT_VECTOR) WDT()	/* 250 interrupts/sec */
     secondCount = 0;
     P1OUT ^= LED_RED; // toggle red LED
     blinkLimit --;	     // increase duty cycle
-    //    if (blinkLimit >= 8)     // but don't let duty cycle go over 1/7.
     if (blinkLimit <= 0)    // but don't let duty cycle go over 1/7.
       blinkLimit = 8;
   }

@@ -5,14 +5,14 @@
 #define LED_GREEN BIT6             // P1.6
 #define LEDS (LED_RED | LED_GREEN)
 
-#define SW1 BIT3		/* switch1 is p1.3 */
+#define SW1 BIT3		/* switch1 is p2.3 */
 #define SWITCHES SW1		/* only 1 switch on this board */
 
 void switch_init() {
-  P1REN |= SWITCHES;		/* enables resistors for switches */
-  P1IE |= SWITCHES;		/* enable interrupts from switches */
-  P1OUT |= SWITCHES;		/* pull-ups for switches */
-  P1DIR &= ~SWITCHES;		/* set switches' bits for input */
+  P2REN |= SWITCHES;		/* enables resistors for switches */
+  P2IE |= SWITCHES;		/* enable interrupts from switches */
+  P2OUT |= SWITCHES;		/* pull-ups for switches */
+  P2DIR &= ~SWITCHES;		/* set switches' bits for input */
 }
 
 void led_init() {
@@ -39,13 +39,13 @@ static int buttonDown;
 void
 switch_interrupt_handler()
 {
-  char p1val = P1IN;		/* switch is in P1 */
+  char p2val = P2IN;		/* switch is in P2 */
 
-/* update switch interrupt sense to detect changes from current buttons */
-  P1IES |= (p1val & SWITCHES);	/* if switch up, sense down */
-  P1IES &= (p1val | ~SWITCHES);	/* if switch down, sense up */
+  /* update switch interrupt sense to detect changes from current buttons */
+  P2IES |= (p2val & SWITCHES);	/* if switch up, sense down */
+  P2IES &= (p2val | ~SWITCHES);	/* if switch down, sense up */
 
-  if (p1val & SW1) {		/* button up */
+  if (p2val & SW1) {		/* button up */
     P1OUT &= ~LED_GREEN;
     buttonDown = 0;
   } else {			/* button down */
@@ -57,9 +57,10 @@ switch_interrupt_handler()
 
 /* Switch on P1 (S2) */
 void
-__interrupt_vec(PORT1_VECTOR) Port_1(){
-  if (P1IFG & SWITCHES) {	      /* did a button cause this interrupt? */
-    P1IFG &= ~SWITCHES;		      /* clear pending sw interrupts */
+__interrupt_vec(PORT2_VECTOR) Port_2(){
+  /* if the button is down, process the interrupt */
+  if (P2IFG & SWITCHES) {	      /* did a button cause this interrupt? */
+    P2IFG &= ~SWITCHES;		      /* clear pending sw interrupts */
     switch_interrupt_handler();	/* single handler for all switches */
   }
 }
@@ -69,10 +70,12 @@ __interrupt_vec(WDT_VECTOR) WDT()	/* 250 interrupts/sec */
 {
   static int blink_count = 0;
   switch (blink_count) { 
+  /* red by default will be dimmer */
   case 6: 
     blink_count = 0;
     P1OUT |= LED_RED;
     break;
+  /* if button is pressed down, red will be brighter */
   default:
     blink_count ++;
     if (!buttonDown) P1OUT &= ~LED_RED; /* don't blink off if button is down */

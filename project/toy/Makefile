@@ -1,5 +1,6 @@
+
 # makefile configuration
-COMMON_OBJECTS  = main.o #wdinterrupthandler.o
+COMMON_OBJECTS  =  #wdinterrupthandler.o
 CPU             = msp430g2553
 CFLAGS          = -mmcu=${CPU} -I../h
 LDFLAGS		= -L/opt/ti/msp430_gcc/include
@@ -8,15 +9,15 @@ LDFLAGS		= -L/opt/ti/msp430_gcc/include
 CC              = msp430-elf-gcc
 AS              = msp430-elf-as
 
-all: toy.elf
+all: toyMain.elf
 
 # additional rules for files
-toy.elf: ${COMMON_OBJECTS} ../lib/libTimer.a
+toyMain.elf: ${COMMON_OBJECTS} toyMain.o p2InterruptHandler.o wdInterruptHandler.o buzzer.o led.o switches.o stateMachines.o ../lib/libTimer.a
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
-load: toy.elf
-	msp430loader.sh $^
+load: toyMain.elf
+	msp430loader.sh toyMain.elf
+#msp430loader.sh $toyMain.elf
 
 clean:
 	rm -f *.o *.elf
-

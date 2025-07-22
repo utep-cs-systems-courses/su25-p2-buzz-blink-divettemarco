@@ -16,12 +16,9 @@ void dim_to_bright_limit_update();
 extern int greenLimit, greenCount, redLimit, redCount;
 
 /* state 3 */
-void wild_green_led_and_buzz_update();
-void wild_red_led_update();
+void wild_update();
 
 /* state 4 */
 void update_buzz();
-
-//void state_advance();
 
 #endif // included

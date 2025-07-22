@@ -6,7 +6,7 @@
 void
 __interrupt_vec(WDT_VECTOR) WDT(){/* 250 interrupts/sec */
   static int secCount = 0;
-  static int twoSecCount = 0;
+  static int twoSecCycle = 0;
   
   /* check case and switch if necessary */
   switch (currState)
@@ -38,12 +38,7 @@ __interrupt_vec(WDT_VECTOR) WDT(){/* 250 interrupts/sec */
   case STATE_WILD:
     /* update buzzer and green led every second */
     if (secCount >= 250) {
-      wild_green_led_and_buzz_update();
-      
-      /* update red led every two seconds*/
-      if (twoSecCount) {
-	wild_red_led_update();
-      }
+      wild_update();
     }
     break;
 
@@ -55,13 +50,8 @@ __interrupt_vec(WDT_VECTOR) WDT(){/* 250 interrupts/sec */
     break;
   }
   /* update counts for secs */
-  //secCount++;
   if (secCount >= 250) {
     secCount = 0;
-    twoSecCount++;
-    if (twoSecCount == 2) {
-      twoSecCount = 0;
-    }
   }
   secCount++;
 }

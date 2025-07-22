@@ -19,8 +19,19 @@ void red_off() {
   P1OUT &= ~LED_RED;
 }
 
+/* turn off green led */
 void green_off() {
   P1OUT &= ~LED_GREEN;
+}
+
+/* toggle red led */
+void red_toggle(){
+  P1OUT ^= LED_RED;
+}
+
+/* toggle green led */
+void green_toggle(){
+  P1OUT ^= LED_GREEN;
 }
 
 /* set up leds */
